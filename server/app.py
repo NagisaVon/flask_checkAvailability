@@ -22,11 +22,15 @@ def test_avail():
     global counter 
     counter += 1
     if (available()):
-        print("Available")
-        return f"""<p><a href="{origin_url}" target="_blank">Test avaliable</a> at {time.asctime()}.</p>"""
+        response = {"html": f"""<p class="alert"><a href="{origin_url}" target="_blank">Test avaliable</a> at {time.asctime()}.</p>"""
+                , "available": True}
     else:
-        print("Not available")
-        return f"""<p>Checked {str(counter)} times, no available test at {time.asctime()}.</p>"""
+        response = {"html": f"""<p>Checked {str(counter)} times, no available test at {time.asctime()}.</p>"""
+                , "available": False}
+    return response
+
+
+
 
 def available():
     try:
@@ -42,4 +46,4 @@ def available():
 
 if __name__ == '__main__':
     server_port = os.environ.get('PORT', '8080')
-    app.run(debug=False, port=server_port, host='0.0.0.0')
+    app.run(debug=True, port=server_port, host='0.0.0.0')

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,29 +8,71 @@
     <title>Checking</title>
 </head>
 
+<style>
+    .alert{
+        background-color: red;
+        color: white;
+    }
+</style>
 
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        $(document).ready(function() {
+        var soundPlaying = false;
+        $(document).ready(function () {
             ajaxCheckNewStatus()
-            setInterval("ajaxCheckNewStatus()",3000); 
+            setInterval("ajaxCheckNewStatus()", 3000);
         });
+
         function ajaxCheckNewStatus() {
             $.ajax({
                 type: "GET",
                 url: '/test_available',
-                success: function(data) {
-                    $('#log').html(data);
+                success: function (data) {
+                    if (data['available'] == true && soundPlaying == false) {
+                        playSound();
+                    }
+                    $('#log').html(data['html']);
                 }
             });
-        }   
+        }
+
+        function playSound() {
+            const audio = $('#audio')[0];
+            let resp = audio.play();
+            if (resp !== undefined) {
+                resp.then(_ => {
+                    // autoplay starts!
+                    audio.play();
+                    soundPlaying = true;
+
+                }).catch(error => {
+                    //show error
+                    console.log(error);
+                });
+            }
+        }
+
+        function soundAlowed() {
+            $('#btn-sound').text('Sound is allowed');
+        }
+        
+        function soundEnded() {
+            soundPlaying = false;
+        }
+        
 
     </script>
     <p>test started at: {{ started }}</p>
     <p>refreshing every 3 seconds</p>
     <h3>Current State: </h5>
-    <span id="log">
-    </span>
+        <span id="log"></span>
+    <button id="btn-sound" onclick="soundAlowed()">Allow Sound</button>
+
+    <!-- controls="controls" -->
+    <audio id="audio" onended="soundEnded()">
+        <source src="/static/soviet.mp3" type="audio/mp3" />
+     </audio>
 </body>
+
 </html>
